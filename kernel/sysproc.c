@@ -110,13 +110,13 @@ uint64
 sys_interpose(void)
 {
   int mask;
-  char path[64];
+  struct proc *p = myproc();
 
   // 获取掩码参数 (第 0 个)
   argint(0, &mask);
 
   // 获取路径参数 (第 1 个)，虽然目前只用 "-"，但仍需正确读取
-  if(argstr(1, path, sizeof(path)) < 0)
+  if(argstr(1, p->allowed_path, MAXPATH) < 0)
     return -1;
 
   // 记录到当前进程结构体中

@@ -273,6 +273,7 @@ kfork(void)
   }
   np->sz = p->sz;
   np->interpose_mask = p->interpose_mask;
+  safestrcpy(np->allowed_path, p->allowed_path, MAXPATH);
 
   // copy saved user registers.
   *(np->trapframe) = *(p->trapframe);

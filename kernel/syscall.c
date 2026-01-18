@@ -135,21 +135,35 @@ syscall(void)
 {
   int num;
   struct proc *p = myproc();
+  char path[MAXPATH];
 
   num = p->trapframe->a7;
-  // 检查该系统调用是否在屏蔽掩码中
+
+  // 检查是否被屏蔽
   if(num > 0 && num < NELEM(syscalls) && (p->interpose_mask & (1 << num))) {
-    // 如果被屏蔽，直接返回 -1 表示失败
+    // 特殊处理：如果是 open 或 exec，检查路径是否匹配
+    if(num == SYS_open || num == SYS_exec) {
+      // 获取用户尝试访问的路径（第一个参数 a0）
+      if(argstr(0, path, MAXPATH) >= 0) {
+        // 如果路径匹配允许的路径，或者是 "-"（代表全放行或全禁止，视逻辑而定）
+        if(strncmp(path, p->allowed_path, MAXPATH) == 0) {
+          // 路径匹配，放行，继续执行下面的 syscalls[num]()
+          goto execute;
+        }
+      }
+    }
+    // 不匹配允许路径且被屏蔽，拒绝执行
     p->trapframe->a0 = -1;
     return;
   }
-  if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
-    // Use num to lookup the system call function for num, call it,
-    // and store its return value in p->trapframe->a0
-    p->trapframe->a0 = syscalls[num]();
-  } else {
-    printf("%d %s: unknown sys call %d\n",
-            p->pid, p->name, num);
-    p->trapframe->a0 = -1;
-  }
+  execute:
+    if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
+      // Use num to lookup the system call function for num, call it,
+      // and store its return value in p->trapframe->a0
+      p->trapframe->a0 = syscalls[num]();
+    } else {
+      printf("%d %s: unknown sys call %d\n",
+              p->pid, p->name, num);
+      p->trapframe->a0 = -1;
+    }
 }
