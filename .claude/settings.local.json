@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:pdos.csail.mit.edu)",
+      "Bash(git merge *)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(make qemu-gdb *)",
+      "Bash(make)",
+      "Bash(make clean *)",
+      "Bash(./grade-lab-lock -v kalloctest)",
+      "Bash(killall qemu-system-riscv64 *)",
+      "Bash(./grade-lab-lock -v usertests)",
+      "Bash(git -C /Users/songhaojie/Documents/xv6-labs-2025 log --oneline -5)",
+      "Bash(git -C /Users/songhaojie/Documents/xv6-labs-2025 worktree list)",
+      "Bash(git -C /Users/songhaojie/Documents/xv6-labs-2025 diff kernel/kalloc.c)",
+      "Bash(cd /Users/songhaojie/Documents/xv6-labs-2025 && killall qemu-system-riscv64 2>/dev/null; sleep 2; make 2>&1 | tail -5)"
+    ]
+  }
+}
